@@ -1,0 +1,56 @@
+---
+- name: Configure nginx to host the website
+  hosts: client_vm
+  become: true
+
+  tasks:
+    - name: Install php package
+      apt:
+        name:
+          - php-fpm
+          - python3-pymysql
+        state: present
+
+    - name: Configure nginx
+      template:
+        src: /etc/ansible/nginx_default.j2
+        dest: /etc/nginx/sites-available/default_new
+      notify: Restart Nginx
+
+    - name: Create a soft link in the enabled sites
+      file:
+        src: /etc/nginx/sites-available/default_new
+        dest: /etc/nginx/sites-enabled/default_new
+        state: link
+
+    - name: Copy index.php file
+      copy:
+        src: /etc/ansible/index.php
+        dest: /var/www/html/index.php
+
+    - name: Create a new MySQL user
+      mysql_user:
+        login_user: root
+        login_password: "pass"
+        name: root
+        password: "pass"
+        host: "%"
+        priv: "*.*:ALL,GRANT"
+        state: present
+      become: true
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Create MySQL database
+      mysql_db:
+        login_user: root
+        login_password: "pass"
+        name: mydb
+        state: present
+      become: true
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

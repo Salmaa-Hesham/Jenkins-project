@@ -1,0 +1,23 @@
+---
+- name: Check the status of the services
+  hosts: client_vm
+  become: true
+
+  tasks:
+    - name: Ensure Nginx is running and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Ensure PHP-FPM is running and enabled
+      service:
+        name: php8.1-fpm
+        state: started
+        enabled: yes
+
+    - name: Ensure MySQL is running and enabled
+      service:
+        name: mysql
+        state: started
+        enabled: yes
