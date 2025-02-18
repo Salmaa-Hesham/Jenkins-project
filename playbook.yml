@@ -1,0 +1,16 @@
+---
+- name: Install LEMP using bash script
+  hosts: client_vm
+  become: true
+
+  tasks:
+    - name: copy the bash script to my client_vm
+      copy:
+        src: /etc/ansible/lemp.sh
+        dest: /tmp/lemp.sh
+        mode: "0755"
+
+    - name: Run the bash script
+      command: bash /tmp/lemp.sh
+      args:
+        chdir: /tmp
