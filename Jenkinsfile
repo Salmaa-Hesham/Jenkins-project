@@ -12,11 +12,6 @@ pipeline {
             }
         }
 
-        stage('Install Ansible') {
-            steps {
-                sh 'sudo apt update && sudo apt install -y ansible'
-            }
-        }
 
         stage('Run Ansible Playbook') {
             steps {
